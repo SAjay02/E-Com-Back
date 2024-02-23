@@ -1,16 +1,16 @@
 const express=require("express");
 const cors=require("cors");
 const bodyParser=require("body-parser");
-const Product=require("./src/Server/Models/productModel");
-const Register=require("./src/Server/Models/registerModel");
-const Login=require("./src/Server/Models/loginModel");
-const Cart=require("./src/Server/Models/cartModel");
-const Address=require("./src/Server/Models/addressModel");
-const Buy=require("./src/Server/Models/buyModel"); 
-const RecentOrders = require("./src/Server/Models/recentModel");
-const Revenue = require("./src/Server/Models/revenueModel");
-const Sales=require("./src/Server/Models/salesModel");
-const connectdb=require("./src/Server/configurations/db");
+const Product=require("./productModel");
+const Register=require("./registerModel");
+const Login=require("./loginModel");
+const Cart=require("./cartModel");
+const Address=require("./addressModel");
+const Buy=require("./buyModel"); 
+const RecentOrders = require("./recentModel");
+const Revenue = require("./revenueModel");
+const Sales=require("./salesModel");
+const connectdb=require("./db");
 const app=express();
 const PORT=8000;
 const jwt=require("jsonwebtoken");
@@ -630,6 +630,21 @@ app.get('/getcart/:authToken',async (req, res) => {
       res.json(revenue);
     })
 
+    //delete all sales after 12AM endpoint
+    app.delete('/deletesales',async(req,res)=>
+    {
+        let count=0;
+        for(let i=0;i<=23;i++)
+        {
+            const deleteSale=await Sales.findOneAndDelete({Time:i});
+            count++;
+            res.json({message:"Sales Deleted",deleteSale});
+        }
+        // if(count==0)
+        // {
+          res.json({message:'Time before 12AM'});
+        // }
+    }) 
 app.listen(PORT,()=>
 {
     console.log(`Port Connected ${PORT}`);
